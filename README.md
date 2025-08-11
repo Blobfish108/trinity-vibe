@@ -73,15 +73,3 @@ Minimal, homoiconic, and reversible language designed around LLM-native thinking
 - For debugging, open your browser console to see tape rewinds and activation logs.
 - Cache-busting query param `?cb=timestamp` helps force reloads during development.
 
-### Publishing (GitHub Pages)
-
-1. Create a repo (e.g., `trinity-vibe`) and push this folder.
-2. In repo Settings → Pages, set Source to `main` branch, root folder.
-3. Optional: add `.nojekyll` to avoid static site processing.
-4. Share the Pages URL; `index.html` will load the live environment.
-
-### License
-
-Choose a license (e.g., MIT) and add a `LICENSE` file if publishing.
-
-# Trinity Vibe Language (Standalone)\n\n- Independent of Moop and DePlatform\n- Open: /trinity-vibe/index.html\n- Static, no build steps required\n
