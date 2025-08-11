@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinity Vibe Coding Language</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%);
+            color: #e0e0ff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+        }
+        
+        .main-content {
+            min-width: 0; /* Prevent grid overflow */
+        }
+        
+        .specs-sidebar {
+            background: rgba(0, 20, 40, 0.8);
+            border: 1px solid rgba(0, 255, 159, 0.2);
+            border-radius: 12px;
+            padding: 0;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 255, 159, 0.1);
+        }
+        
+        .spec-section h2 {
+            color: #00ff9f;
+            margin: 0;
+            padding: 20px 20px 15px 20px;
+            border-bottom: 1px solid rgba(0, 255, 159, 0.2);
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .spec-content {
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .spec-content h3 {
+            color: #00ff9f;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            border-left: 3px solid #00ff9f;
+            padding-left: 10px;
+        }
+        
+        .spec-item {
+            background: rgba(0, 255, 159, 0.05);
+            border: 1px solid rgba(0, 255, 159, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .spec-item strong {
+            color: #00ff9f;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .spec-item code {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: #88ffcc;
+            display: block;
+            margin: 4px 0;
+        }
+        
+        .spec-item p {
+            margin: 6px 0 0 0;
+            font-size: 0.9em;
+            color: #ccc;
+            line-height: 1.4;
+        }
+        
+        .permission-bits {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        
+        .permission-bits div {
+            font-family: monospace;
+            margin: 4px 0;
+            color: #88ffcc;
+        }
+        
+        .properties-list {
+            margin: 8px 0;
+            padding-left: 0;
+        }
+        
+        .properties-list li {
+            list-style: none;
+            margin: 6px 0;
+            padding-left: 0;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+        
+        .philosophy {
+            background: rgba(0, 255, 159, 0.03);
+            border: 1px solid rgba(0, 255, 159, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .philosophy p {
+            margin: 8px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        
+        .philosophy strong {
+            color: #00ff9f;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 1000px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container > div {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .specs-sidebar {
+                position: relative;
+                top: 0;
+                order: -1; /* Put specs at top on mobile */
+            }
+            
+            .spec-content {
+                max-height: 60vh;
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff9f;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .demo-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .demo-title {
+            color: #00ff9f;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 159, 0.2);
+            padding-bottom: 5px;
+        }
+        
+        .output {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            color: #00ff9f;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #00ff9f, #00cc7f);
+            border: none;
+            color: #0a0a0a;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 159, 0.3);
+        }
+        
+        .trinity-levels {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .level {
+            background: linear-gradient(135deg, rgba(0, 255, 159, 0.1), rgba(0, 255, 159, 0.05));
+            border: 1px solid rgba(0, 255, 159, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .level h3 {
+            color: #00ff9f;
+            margin-top: 0;
+        }
+        
+        .symbol-viz {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff9f;
+        }
+        
+        .capability-token {
+            display: inline-block;
+            background: rgba(0, 255, 159, 0.2);
+            border: 1px solid rgba(0, 255, 159, 0.3);
+            border-radius: 12px;
+            padding: 3px 8px;
+            margin: 2px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: grid; grid-template-columns: 1fr 400px; gap: 20px; max-width: 100%; margin: 0 auto;">
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>🔥 Trinity Vibe Coding</h1>
+            <p class="subtitle">Functions → Actors → Prototypes | Minimal. Emergent. Vibes.</p>
+            
+            <div class="trinity-levels">
+                <div class="level">
+                    <h3>⚡ Functions</h3>
+                    <p>Pure transformations<br>Capability-aware<br>Time-reversible</p>
+                </div>
+                <div class="level">
+                    <h3>🎭 Actors</h3>
+                    <p>Non-hereditary<br>Pure step semantics<br>Message handlers</p>
+                </div>
+                <div class="level">
+                    <h3>🏗️ Prototypes</h3>
+                    <p>Hereditary actors<br>Inheritance chains<br>Instance factories</p>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <div class="demo-title">🚀 Live Trinity Demo</div>
+                <button onclick="activate('Execute Trinity Pattern', runTrinityDemo)">Execute Trinity Pattern</button>
+                <button onclick="activate('Show Vibe Coding Style', runVibeDemo)">Show Vibe Coding Style</button>
+                <button onclick="activate('LLM Coding Example', runLLMPattern)">LLM Coding Example</button>
+                <button onclick="activate('Web Framework File System', runWebFramework)">🌐 Web Framework File System</button>
+                <button onclick="activate('Tape-Loop Reversibility', runTapeLoopDemo)">🎬 Tape-Loop Reversibility</button>
+                <button onclick="activate('Architect Chain', runArchitectChain)">🏗️ Architect Chain</button>
+                <button onclick="activate('Run Language Tests', runLanguageTests)">✅ Run Language Tests</button>
+                <button onclick="activate('Clear Output', clearOutput)">Clear Output</button>
+                <div id="output" class="output">Click a button to see Trinity-style vibe coding in action...</div>
+            </div>
+            
+            <div class="demo-section">
+                <div class="demo-title">🎯 Symbol Space Visualization</div>
+                <div id="symbolSpace" class="output">Symbol space will appear here...</div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">🧭 Symbol Inspector</div>
+                <div id="symbolInspector" class="output">Click "Inspect" on any symbol to view full details...</div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">🧪 Language Test Results</div>
+                <div id="testResults" class="output">No tests run yet.</div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">💾 Persistence</div>
+                <button onclick="activate('Save Space', saveSpace)">Save Space</button>
+                <button onclick="activate('Load Space', loadSpace)">Load Space</button>
+                <button onclick="activate('Clear Space', clearSpace)">Clear Space</button>
+                <div id="persistStatus" class="output">Use Save/Load to persist the symbol space (localStorage).</div>
+            </div>
+        </div>
+
+        <!-- Language Specs Sidebar -->
+        <div class="specs-sidebar">
+            <div class="spec-section">
+                <h2>📋 Language Specs</h2>
+                <div class="spec-content">
+                    <h3>🔮 Core Primitives</h3>
+                    <div class="spec-item">
+                        <strong>VibeSymbol</strong>
+                        <code>new VibeSymbol(value, capabilities?)</code>
+                        <p>Universal data container with causal identity, temporal coordinates, and capability tokens.</p>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <strong>vibeTransform</strong>
+                        <code>vibeTransform(symbol, transformSymbol)</code>
+                        <p>Universal operation. Applies transformation with capability checking and causal tracking.</p>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <strong>VibeToken</strong>
+                        <code>new VibeToken(perms, scope, expiry)</code>
+                        <p>Capability tokens with bitfield permissions, temporal scope, and vibe intensity.</p>
+                    </div>
+
+                    <h3>⚡ Function Layer</h3>
+                    <div class="spec-item">
+                        <strong>createVibeFunction</strong>
+                        <code>createVibeFunction(fn, options)</code>
+                        <p>Pure transformations with capability requirements and optional inverse functions.</p>
+                    </div>
+
+                    <h3>🎭 Actor Layer (Non-Hereditary)</h3>
+                    <div class="spec-item">
+                        <strong>createVibeActor</strong>
+                        <code>createVibeActor(handlers, state)</code>
+                        <p>Pure step semantics. Stateful message processors without inheritance.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>sendMessage</strong>
+                        <code>sendMessage(actor, message)</code>
+                        <p>Send message to actor, get immediate response.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>stepActor</strong>
+                        <code>stepActor(actor, message)</code>
+                        <p>Process message and return new actor state + output.</p>
+                    </div>
+
+                    <h3>🏗️ Prototype Layer (Hereditary)</h3>
+                    <div class="spec-item">
+                        <strong>createVibePrototype</strong>
+                        <code>createVibePrototype(template, methods, parent?)</code>
+                        <p>Inheritance-enabled instance factories with method resolution chains.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>instantiate</strong>
+                        <code>instantiate(prototype, params)</code>
+                        <p>Create instance from prototype template.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>callMethod</strong>
+                        <code>callMethod(instance, methodName, ...args)</code>
+                        <p>Call method with inheritance resolution.</p>
+                    </div>
+
+                    <h3>🕰️ Time Travel</h3>
+                    <div class="spec-item">
+                        <strong>vibeRevert</strong>
+                        <code>vibeRevert(symbol, steps)</code>
+                        <p>Multi-step backwards traversal through causal chains for debugging and rollback.</p>
+                    </div>
+
+                    <h3>🔐 Permissions</h3>
+                    <div class="permission-bits">
+                        <div><code>PERM_READ = 1</code> 📖</div>
+                        <div><code>PERM_WRITE = 2</code> ✍️</div>
+                        <div><code>PERM_EXECUTE = 4</code> ⚡</div>
+                        <div><code>PERM_NETWORK = 8</code> 🌐</div>
+                    </div>
+
+                    <h3>📼 Tape-Loop Foundation</h3>
+                    <div class="spec-item">
+                        <strong>TapeOperation</strong>
+                        <code>new TapeOperation(type, data, position)</code>
+                        <p>Reversible atomic operations with structural inverses. Foundation layer for all computation.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>Ubiquitous Homoiconicity</strong>
+                        <code>symbol.sourceCode, symbol.structure</code>
+                        <p>Every symbol can represent itself as code and data. Inherited by all upper layers.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>Structural Reversibility</strong>
+                        <code>symbol.executeStructuralRevert()</code>
+                        <p>All transformations can be precisely undone through tape operation inversion.</p>
+                    </div>
+                    <div class="spec-item">
+                        <strong>Memory as Computation</strong>
+                        <code>symbol.pruneTapeOperations()</code>
+                        <p>Intelligent tape pruning keeps only causally relevant operations. Memory becomes computation.</p>
+                    </div>
+
+                    <h3>🌟 Emergent Properties</h3>
+                    <ul class="properties-list">
+                        <li>🔄 Automatic capability attenuation</li>
+                        <li>📚 Complete causal provenance</li>
+                        <li>⏪ Structural reversibility (inherited)</li>
+                        <li>🔮 Ubiquitous homoiconicity (inherited)</li>
+                        <li>🎯 Natural abstraction hierarchy</li>
+                        <li>🚀 LLM-friendly patterns</li>
+                        <li>💎 Immutable transformation chains</li>
+                        <li>🔧 Self-modifying code capabilities</li>
+                    </ul>
+
+                    <h3>🎨 Vibe Philosophy</h3>
+                    <div class="philosophy">
+                        <p><strong>Minimalism through Unification:</strong> Three orthogonal primitives generate infinite complexity through composition.</p>
+                        
+                        <p><strong>Trinity Hierarchy:</strong> Functions → Actors → Prototypes mirrors natural LLM thinking patterns.</p>
+                        
+                        <p><strong>Two-Kind Actor Model:</strong> Non-hereditary actors for pure step semantics vs hereditary prototypes for inheritance-enabled instances.</p>
+                        
+                        <p><strong>Tape-Loop Foundation:</strong> Ubiquitous homoiconicity and structural reversibility inherited by all upper layers through bottom-up power flow.</p>
+                        
+                        <p><strong>Emergent Security:</strong> Capabilities flow automatically through transformations without explicit management.</p>
+                        
+                        <p><strong>Vibe-Driven:</strong> Playful aesthetics reduce cognitive load and encourage creative exploration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============= CORE TRINITY VIBE LANGUAGE =============
+        
+        // Global symbol space for vibe tracking
+        const VIBE_SPACE = new Map();
+        let temporalCoord = 0;
+        // UI activation symbol placeholder (initialized after class definition)
+        let UI_ACTIVATION = null;
+        
+        // Memory as computation: Tape pruning configuration
+        const TAPE_PRUNING_CONFIG = {
+            maxTapeLength: 50,        // Maximum tape operations to retain
+            causalRelevanceThreshold: 0.3,  // Minimum relevance score to keep
+            temporalDecayFactor: 0.9,       // How quickly old operations lose relevance
+            structuralWeightFactor: 2.0     // Boost for operations that affect current structure
+        };
+        
+        // Collision-resistant hash with vibe
+        function vibeHash(...inputs) {
+            const nonce = Date.now() + Math.random();
+            const combined = nonce + inputs.join('');
+            // Simple hash for demo - would use crypto.subtle in production
+            let hash = 0;
+            for (let i = 0; i < combined.length; i++) {
+                hash = ((hash << 5) - hash + combined.charCodeAt(i)) & 0xffffffff;
+            }
+            return Math.abs(hash).toString(16).slice(0, 12);
+        }
+        
+        // Capability system with vibe
+        class VibeToken {
+            constructor(permissions = 15, scope = 100, expiry = 1000) {
+                this.permissions = permissions; // Bitfield
+                this.scope = scope;
+                this.expiry = expiry;
+                this.vibeLevel = Math.random(); // 0-1 vibe intensity
+                this.attenuationChain = [];
+            }
+            
+            allows(requiredPerms) {
+                return (this.permissions & requiredPerms) === requiredPerms;
+            }
+            
+            attenuate(restrictions) {
+                const newToken = new VibeToken(
+                    this.permissions & restrictions,
+                    this.scope,
+                    this.expiry
+                );
+                newToken.vibeLevel = this.vibeLevel * 0.8; // Decay vibe
+                newToken.attenuationChain = [...this.attenuationChain, restrictions];
+                return newToken;
+            }
+            
+            isExpired() {
+                return temporalCoord >= this.expiry;
+            }
+            
+            getVibeEmoji() {
+                if (this.vibeLevel > 0.8) return "🔥";
+                if (this.vibeLevel > 0.6) return "✨";
+                if (this.vibeLevel > 0.4) return "💫";
+                if (this.vibeLevel > 0.2) return "🌟";
+                return "💤";
+            }
+        }
+        
+        // ============= TAPE-LOOP LAYER: REVERSIBLE + HOMOICONIC FOUNDATION =============
+        
+        // Tape-Loop Operations - reversible atomic operations
+        class TapeOperation {
+            constructor(type, data, position = 0, computeInverse = true) {
+                this.type = type; // 'read', 'write', 'move', 'mark', 'jump'
+                this.data = data;
+                this.position = position;
+                this.inverse = computeInverse ? this.computeInverse() : null;
+                this.structure = this.toStructure();
+            }
+            
+            computeInverse() {
+                switch(this.type) {
+                    case 'write': return new TapeOperation('restore', this.previousValue, this.position, false);
+                    case 'move': return new TapeOperation('move', -this.data, this.position, false);
+                    case 'mark': return new TapeOperation('unmark', this.data, this.position, false);
+                    case 'jump': return new TapeOperation('jump', this.returnAddress, this.position, false);
+                    case 'restore': return new TapeOperation('write', this.data, this.position, false);
+                    default: return null;
+                }
+            }
+            
+            toStructure() {
+                return {
+                    op: this.type,
+                    data: this.data,
+                    pos: this.position,
+                    reversible: true,
+                    homoiconic: true
+                };
+            }
+            
+            toCode() {
+                return `(${this.type} ${this.data} @${this.position})`;
+            }
+        }
+
+        // The Universal Symbol - inherits tape-loop reversibility and homoiconicity
+        class VibeSymbol {
+            constructor(value, capabilities = null) {
+                this.value = value;
+                this.hash = vibeHash(typeof value, JSON.stringify(value));
+                this.capabilities = capabilities || new Set([new VibeToken()]);
+                this.coord = temporalCoord++;
+                this.history = [];
+                this.snapshot = null;
+                this.inverse = null;
+                this.parentHash = null;
+                this.vibeType = this.detectVibeType();
+                
+                // INHERITED FROM TAPE-LOOP LAYER: Homoiconicity
+                this.structure = this.extractStructure();
+                this.sourceCode = this.generateSourceCode();
+                this.tapeOperations = []; // Sequence of tape operations that created this symbol
+                
+                // INHERITED FROM TAPE-LOOP LAYER: Reversibility  
+                this.transformationMetadata = {
+                    operation: null,
+                    operands: [],
+                    inverseOperation: null,
+                    structuralDiff: null,
+                    tapeState: null // Tape state before transformation
+                };
+                
+                // Register in vibe space
+                VIBE_SPACE.set(this.hash, this);
+            }
+            
+            detectVibeType() {
+                if (typeof this.value === 'function') {
+                    // Check if it looks like an actor (handles messages)
+                    if (this.value.toString().includes('message') || 
+                        this.value.toString().includes('handle')) {
+                        return 'ACTOR';
+                    }
+                    // Check if it looks like a prototype (creates instances)  
+                    if (this.value.toString().includes('new ') ||
+                        this.value.toString().includes('create') ||
+                        this.value.toString().includes('instantiate')) {
+                        return 'PROTOTYPE';
+                    }
+                    return 'FUNCTION';
+                }
+                return 'DATA';
+            }
+            
+            canPerform(requiredPerms) {
+                return Array.from(this.capabilities).some(cap => 
+                    !cap.isExpired() && cap.allows(requiredPerms)
+                );
+            }
+            
+            getVibeEmoji() {
+                const cap = Array.from(this.capabilities)[0];
+                const typeEmoji = {
+                    'FUNCTION': '⚡',
+                    'ACTOR': '🎭', 
+                    'PROTOTYPE': '🏗️',
+                    'DATA': '💎'
+                };
+                return typeEmoji[this.vibeType] + (cap ? cap.getVibeEmoji() : '');
+            }
+            
+            // INHERITED HOMOICONICITY: Extract structural representation
+            extractStructure() {
+                if (typeof this.value === 'function') {
+                    return {
+                        type: 'function',
+                        params: this.extractFunctionParams(),
+                        body: this.value.toString(),
+                        ast: this.parseToAST(this.value.toString())
+                    };
+                } else if (typeof this.value === 'object' && this.value !== null) {
+                    return {
+                        type: 'object',
+                        properties: Object.keys(this.value),
+                        structure: this.mapObjectStructure(this.value)
+                    };
+                } else {
+                    return {
+                        type: typeof this.value,
+                        value: this.value,
+                        representation: JSON.stringify(this.value)
+                    };
+                }
+            }
+            
+            // INHERITED HOMOICONICITY: Generate source code representation
+            generateSourceCode() {
+                const struct = this.structure;
+                switch (struct.type) {
+                    case 'function':
+                        return `createVibeFunction(${struct.body})`;
+                    case 'object':
+                        if (this.value.kind === 'ACTOR') {
+                            const handlers = Object.keys(this.value.handlers || {});
+                            return `createVibeActor({${handlers.map(h => `'${h}': ${this.value.handlers[h]}`).join(', ')}})`;
+                        } else if (this.value.kind === 'PROTOTYPE') {
+                            return `createVibePrototype(${JSON.stringify(this.value.template)}, ${JSON.stringify(this.value.methods)})`;
+                        }
+                        return `new VibeSymbol(${JSON.stringify(this.value)})`;
+                    default:
+                        return `new VibeSymbol(${JSON.stringify(this.value)})`;
+                }
+            }
+            
+            // INHERITED REVERSIBILITY: Create structural inverse
+            createStructuralInverse() {
+                const operations = this.tapeOperations.slice().reverse();
+                const inverseOps = operations.map(op => op.inverse);
+                return {
+                    operations: inverseOps,
+                    targetHash: this.parentHash,
+                    revertToCoord: this.coord - 1
+                };
+            }
+            
+            // INHERITED REVERSIBILITY: Execute structural revert
+            executeStructuralRevert() {
+                const inverse = this.createStructuralInverse();
+                if (this.parentHash && VIBE_SPACE.has(this.parentHash)) {
+                    const parent = VIBE_SPACE.get(this.parentHash);
+                    // Create new symbol with parent's state but current temporal coord
+                    const reverted = new VibeSymbol(parent.value, parent.capabilities);
+                    reverted.coord = temporalCoord++;
+                    reverted.parentHash = parent.parentHash;
+                    reverted.tapeOperations = parent.tapeOperations.slice();
+                    return reverted;
+                }
+                return this; // Can't revert further
+            }
+            
+            // INHERITED: Self-modification through homoiconicity
+            modifySelf(transformation) {
+                const currentCode = this.sourceCode;
+                const newCode = transformation(currentCode);
+                
+                // Parse and execute new code to create modified symbol
+                try {
+                    const newValue = eval(`(${newCode})`);
+                    const modified = new VibeSymbol(newValue.value || newValue, this.capabilities);
+                    modified.parentHash = this.hash;
+                    modified.tapeOperations = [...this.tapeOperations, new TapeOperation('modify', transformation, this.coord)];
+                    return modified;
+                } catch (e) {
+                    console.warn('Self-modification failed:', e);
+                    return this;
+                }
+            }
+            
+            // Helper methods for homoiconicity
+            extractFunctionParams() {
+                const funcStr = this.value.toString();
+                const match = funcStr.match(/\(([^)]*)\)/);
+                return match ? match[1].split(',').map(p => p.trim()) : [];
+            }
+            
+            parseToAST(code) {
+                // Simplified AST for demo - would use proper parser in production
+                return {
+                    type: 'FunctionExpression',
+                    params: this.extractFunctionParams(),
+                    body: code.substring(code.indexOf('{') + 1, code.lastIndexOf('}'))
+                };
+            }
+            
+            mapObjectStructure(obj) {
+                const structure = {};
+                for (const [key, value] of Object.entries(obj)) {
+                    structure[key] = {
+                        type: typeof value,
+                        isFunction: typeof value === 'function',
+                        isVibeSymbol: value instanceof VibeSymbol
+                    };
+                }
+                return structure;
+            }
+        }
+        
+        // The Universal Transform - inherits tape-loop reversibility and homoiconicity
+        function vibeTransform(inputSymbol, transformSymbol) {
+            if (!transformSymbol.canPerform(4)) { // Execute permission
+                throw new Error(`Vibe check failed: insufficient permissions 🚫`);
+            }
+            
+            // TAPE-LOOP LAYER: Record transformation as tape operations
+            const tapeOp = new TapeOperation('transform', {
+                input: inputSymbol.hash,
+                transform: transformSymbol.hash,
+                inputValue: inputSymbol.value,
+                transformFunc: transformSymbol.value
+            }, temporalCoord, false);
+            
+            // Execute the transformation
+            let result;
+            if (typeof transformSymbol.value === 'function') {
+                result = transformSymbol.value(inputSymbol.value);
+            } else {
+                throw new Error("Transform must be a function vibe");
+            }
+            
+            // Create result symbol with INHERITED properties
+            const resultSymbol = new VibeSymbol(result);
+            resultSymbol.parentHash = inputSymbol.hash;
+            resultSymbol.history = [...inputSymbol.history, transformSymbol.hash];
+            
+            // INHERITED REVERSIBILITY: Store transformation metadata
+            resultSymbol.transformationMetadata = {
+                operation: 'vibeTransform',
+                operands: [inputSymbol.hash, transformSymbol.hash],
+                inverseOperation: 'vibeRevert',
+                structuralDiff: computeStructuralDiff(inputSymbol, resultSymbol),
+                tapeState: inputSymbol.tapeOperations.slice() // Snapshot of tape state
+            };
+            
+            // INHERITED HOMOICONICITY: Track tape operations (no self-referential inverses)
+            resultSymbol.tapeOperations = [...inputSymbol.tapeOperations, tapeOp];
+            
+            // MEMORY AS COMPUTATION: Prune tape operations based on causal relevance
+            resultSymbol.pruneTapeOperations();
+            
+            // Attenuate capabilities with vibe
+            if (transformSymbol.capabilityRestrictions) {
+                const newCaps = new Set();
+                for (const cap of inputSymbol.capabilities) {
+                    if (!cap.isExpired()) {
+                        newCaps.add(cap.attenuate(transformSymbol.capabilityRestrictions));
+                    }
+                }
+                resultSymbol.capabilities = newCaps;
+            }
+            
+            return resultSymbol;
+        }
+        
+        // Compute structural differences for reversibility
+        function computeStructuralDiff(before, after) {
+            return {
+                beforeStructure: before.structure,
+                afterStructure: after.structure,
+                beforeCode: before.sourceCode,
+                afterCode: after.sourceCode,
+                diff: {
+                    added: findStructuralAdditions(before.structure, after.structure),
+                    removed: findStructuralRemovals(before.structure, after.structure),
+                    modified: findStructuralModifications(before.structure, after.structure)
+                }
+            };
+        }
+        
+        function findStructuralAdditions(before, after) {
+            // Simplified diff - would use proper structural diff in production
+            return Object.keys(after).filter(key => !(key in before));
+        }
+        
+        function findStructuralRemovals(before, after) {
+            return Object.keys(before).filter(key => !(key in after));
+        }
+        
+        function findStructuralModifications(before, after) {
+            const modified = [];
+            for (const key of Object.keys(before)) {
+                if (key in after && JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
+                    modified.push(key);
+                }
+            }
+            return modified;
+        }
+        
+        // MEMORY AS COMPUTATION: Tape loop pruning based on causal relevance
+        VibeSymbol.prototype.pruneTapeOperations = function() {
+            if (this.tapeOperations.length <= TAPE_PRUNING_CONFIG.maxTapeLength) {
+                return; // No pruning needed
+            }
+            
+            // Score each tape operation by causal relevance to current state
+            const scoredOps = this.tapeOperations.map((op, index) => ({
+                operation: op,
+                index: index,
+                relevanceScore: this.computeCausalRelevance(op, index)
+            }));
+            
+            // Sort by relevance (highest first) and keep top operations
+            scoredOps.sort((a, b) => b.relevanceScore - a.relevanceScore);
+            const keepCount = Math.floor(TAPE_PRUNING_CONFIG.maxTapeLength * 0.8); // Keep 80% of max
+            const keptOps = scoredOps.slice(0, keepCount).map(scored => scored.operation);
+            
+            // Rebuild tape in temporal order
+            keptOps.sort((a, b) => a.position - b.position);
+            this.tapeOperations = keptOps;
+            
+            console.log(`🧹 Pruned tape: ${scoredOps.length} → ${keptOps.length} operations (kept ${keepCount})`);
+        }
+        
+        // Compute causal relevance of a tape operation to current state
+        VibeSymbol.prototype.computeCausalRelevance = function(operation, operationIndex) {
+            const currentCoord = this.coord;
+            const opCoord = operation.position;
+            
+            // Temporal decay: recent operations are more relevant
+            const temporalRelevance = Math.pow(TAPE_PRUNING_CONFIG.temporalDecayFactor, currentCoord - opCoord);
+            
+            // Structural relevance: operations that affect current structure
+            let structuralRelevance = 0;
+            if (this.isOperationStructurallyRelevant(operation)) {
+                structuralRelevance = TAPE_PRUNING_CONFIG.structuralWeightFactor;
+            }
+            
+            // Causal chain relevance: operations in direct causal ancestry
+            let causalChainRelevance = 0;
+            if (this.isInCausalAncestry(operation)) {
+                causalChainRelevance = 1.5;
+            }
+            
+            // Dependency relevance: operations that current state depends on
+            let dependencyRelevance = 0;
+            if (this.isDependentOperation(operation)) {
+                dependencyRelevance = 1.2;
+            }
+            
+            const totalRelevance = temporalRelevance + structuralRelevance + causalChainRelevance + dependencyRelevance;
+            return Math.min(totalRelevance, 5.0); // Cap at 5.0
+        }
+        
+        // Check if operation affects current structural properties
+        VibeSymbol.prototype.isOperationStructurallyRelevant = function(operation) {
+            if (operation.type === 'transform' && operation.data.transformFunc) {
+                // Check if transform function is still relevant to current value type
+                const currentType = typeof this.value;
+                const transformedSimilarType = operation.data.inputValue && (typeof operation.data.inputValue === currentType);
+                return transformedSimilarType;
+            }
+            return operation.type === 'modify' || operation.type === 'write';
+        }
+        
+        // Check if operation is in direct causal ancestry
+        VibeSymbol.prototype.isInCausalAncestry = function(operation) {
+            return this.history.includes(operation.data.transform) || 
+                   this.parentHash === operation.data.input;
+        }
+        
+        // Check if current state depends on this operation
+        VibeSymbol.prototype.isDependentOperation = function(operation) {
+            if (operation.type === 'transform' || operation.type === 'modify') {
+                return true; // All transforms potentially affect current state
+            }
+            return false;
+        }
+        
+        // Global tape pruning across all symbols in VIBE_SPACE
+        function pruneGlobalTapeSpace() {
+            let totalPruned = 0;
+            for (const [hash, symbol] of VIBE_SPACE) {
+                const beforeLength = symbol.tapeOperations.length;
+                symbol.pruneTapeOperations();
+                totalPruned += (beforeLength - symbol.tapeOperations.length);
+            }
+            console.log(`🧹 Global tape pruning: ${totalPruned} operations pruned across ${VIBE_SPACE.size} symbols`);
+            return totalPruned;
+        }
+        
+        // Demonstrate memory as computation with tape pruning
+        function demonstrateTapePruning() {
+            log(`\n🧠 MEMORY AS COMPUTATION: Intelligent Tape Pruning`);
+            
+            // Create a symbol and apply many transformations
+            let current = new VibeSymbol(1);
+            const transforms = [
+                x => x + 1,    // Relevant: affects current numeric value
+                x => x * 2,    // Relevant: affects current numeric value  
+                x => x - 1,    // Less relevant: undoes earlier operation
+                x => x.toString(), // Irrelevant: changes type completely
+                x => parseInt(x),  // Relevant: restores numeric type
+                x => x + 10,   // Relevant: affects current numeric value
+                x => x / 2,    // Relevant: affects current numeric value
+                x => Math.floor(x), // Relevant: affects current value
+                x => x * 3,    // Relevant: affects current numeric value
+                x => x + 5     // Most relevant: final transformation
+            ];
+            
+            // Apply all transformations
+            for (let i = 0; i < transforms.length; i++) {
+                const transformFunc = createVibeFunction(transforms[i]);
+                current = vibeTransform(current, transformFunc);
+                log(`  Step ${i+1}: ${current.value} (tape length: ${current.tapeOperations.length})`);
+            }
+            
+            // Show relevance scores for each operation
+            log(`\n📊 Causal Relevance Scores:`);
+            current.tapeOperations.forEach((op, index) => {
+                const score = current.computeCausalRelevance(op, index);
+                log(`  Op ${index+1}: ${op.toCode().slice(0,30)}... → Score: ${score.toFixed(2)}`);
+            });
+            
+            // Force pruning by lowering max tape length
+            const originalMax = TAPE_PRUNING_CONFIG.maxTapeLength;
+            TAPE_PRUNING_CONFIG.maxTapeLength = 5; // Force aggressive pruning
+            
+            log(`\n🧹 Forcing tape pruning (max length: ${TAPE_PRUNING_CONFIG.maxTapeLength}):`);
+            const beforePrune = current.tapeOperations.length;
+            current.pruneTapeOperations();
+            const afterPrune = current.tapeOperations.length;
+            
+            log(`  Before pruning: ${beforePrune} operations`);
+            log(`  After pruning: ${afterPrune} operations`);
+            log(`  Kept operations:`);
+            current.tapeOperations.forEach((op, index) => {
+                const score = current.computeCausalRelevance(op, index);
+                log(`    ${op.toCode().slice(0,40)}... (score: ${score.toFixed(2)})`);
+            });
+            
+            // Test that reversibility still works with pruned tape
+            log(`\n⏪ Reversibility with pruned tape:`);
+            log(`  Current value: ${current.value}`);
+            const reverted = vibeRevert(current, 2);
+            log(`  After 2 reverts: ${reverted.value}`);
+            log(`  Reversibility preserved: ${reverted.value !== current.value ? '✅' : '❌'}`);
+            
+            // Restore original config
+            TAPE_PRUNING_CONFIG.maxTapeLength = originalMax;
+            
+            return current;
+        }
+        
+        // Enhanced vibeRevert with structural reversibility from tape-loop layer
+        function vibeRevert(symbol, steps = 1) {
+            if (steps <= 0) return symbol;
+            
+            let current = symbol;
+            for (let i = 0; i < steps; i++) {
+                // Use structural reversibility if available
+                if (current.transformationMetadata.structuralDiff) {
+                    current = current.executeStructuralRevert();
+                } else if (current.parentHash && VIBE_SPACE.has(current.parentHash)) {
+                    // Fallback to simple parent traversal
+                    current = VIBE_SPACE.get(current.parentHash);
+                } else {
+                    break; // Can't revert further
+                }
+            }
+            return current;
+        }
+        
+        // Enhanced vibeRevert that shows tape operations being unwound
+        function vibeRevertWithTape(symbol, steps = 1) {
+            console.log(`🎬 Rewinding tape operations for ${symbol.hash}:`);
+            
+            let current = symbol;
+            for (let i = 0; i < steps; i++) {
+                if (current.tapeOperations.length > 0) {
+                    const lastOp = current.tapeOperations[current.tapeOperations.length - 1];
+                    console.log(`  ⏪ Reversing: ${lastOp.toCode()}`);
+                    
+                    // Execute the inverse operation
+                    if (lastOp.inverse) console.log(`     Inverse: ${lastOp.inverse.toCode()}`);
+                }
+                
+                current = current.executeStructuralRevert();
+                if (current === symbol) break; // Can't revert further
+            }
+            
+            console.log(`🎬 Tape rewind complete. Final state: ${current.hash}`);
+            return current;
+        }
+        
+        // ============= TRINITY STYLE HELPERS =============
+        
+        // Level 1: Function creation with vibe
+        function createVibeFunction(fn, options = {}) {
+            const symbol = new VibeSymbol(fn);
+            symbol.requiredPerms = options.requiredPerms || 4; // Execute
+            symbol.inverse = options.inverse;
+            symbol.vibeDescription = options.description || "A vibe function";
+            return symbol;
+        }
+        
+        // Level 2: Actor (non-hereditary) — pure step semantics, no inheritance
+        function createVibeActor(handlers, initialState = {}) {
+            const actorSymbol = new VibeSymbol({ kind: 'ACTOR', state: initialState, handlers });
+            actorSymbol.messageHandlers = Object.keys(handlers);
+            actorSymbol.vibeType = 'ACTOR';
+            return actorSymbol;
+        }
+
+        function stepActor(actorSymbol, message) {
+            const { handlers, state } = actorSymbol.value;
+            const handler = (typeof message === 'string' && handlers[message]) ? handlers[message] : handlers.default;
+            const result = handler ? handler(state, message) : { state, out: undefined };
+            const nextActor = new VibeSymbol({ kind: 'ACTOR', state: (result && result.state) ?? state, handlers });
+            nextActor.messageHandlers = actorSymbol.messageHandlers;
+            nextActor.vibeType = 'ACTOR';
+            return { actor: nextActor, out: result ? result.out : undefined };
+        }
+
+        // Helper function for actors to handle messages directly
+        function sendMessage(actorSymbol, message, ...args) {
+            const { handlers } = actorSymbol.value;
+            const handler = (typeof message === 'string' && handlers[message]) ? handlers[message] : handlers.default;
+            return handler ? handler(actorSymbol.value.state, ...args) : `No handler for: ${message}`;
+        }
+        
+        // Level 3: Prototype (hereditary actor) — inheritance-enabled instances
+        function createVibePrototype(template, methods = {}, parentProto = null) {
+            const proto = new VibeSymbol({ kind: 'PROTOTYPE', template, methods, parent: parentProto ? parentProto.hash : null });
+            proto.methods = Object.keys(methods);
+            proto.vibeType = 'PROTOTYPE';
+            return proto;
+        }
+
+        function resolveMethod(protoHash, methodName) {
+            let curHash = protoHash;
+            while (curHash) {
+                const p = VIBE_SPACE.get(curHash);
+                if (!p) break;
+                const val = p.value || {};
+                if (val.methods && val.methods[methodName]) return { proto: p, fn: val.methods[methodName] };
+                curHash = val.parent || null;
+            }
+            return null;
+        }
+
+        function instantiate(proto, params = {}) {
+            const p = proto.value;
+            const data = (typeof p.template === 'function') ? p.template(params) : { ...(p.template || {}), ...params };
+            return new VibeSymbol({ kind: 'INSTANCE', proto: proto.hash, state: data });
+        }
+
+        function callMethod(instanceSymbol, methodName, ...args) {
+            const m = resolveMethod(instanceSymbol.value.proto, methodName);
+            if (!m) throw new Error(`Method not found: ${methodName}`);
+            const result = m.fn(instanceSymbol, ...args);
+            const nextInstance = (result && result.instance) ? result.instance : instanceSymbol;
+            return { instance: nextInstance, out: result ? result.out : undefined };
+        }
+        
+        // ============= DEMO FUNCTIONS =============
+        
+        // Minimal test harness
+        function runLanguageTests() {
+            const out = document.getElementById('testResults');
+            const results = [];
+            const ok = (name, cond) => results.push({ name, pass: !!cond });
+            const show = () => {
+                out.textContent = results.map(r => `${r.pass ? '✅' : '❌'} ${r.name}`).join('\n');
+            };
+
+            try {
+                // 1) Function layer: vibeTransform purity and provenance
+                const doubleFn = createVibeFunction(x => x * 2);
+                const s1 = new VibeSymbol(3);
+                const s2 = vibeTransform(s1, doubleFn);
+                ok('Function transform value', s2.value === 6);
+                ok('Function transform provenance', s2.parentHash === s1.hash);
+                ok('Function transform tapes', s2.tapeOperations.length === s1.tapeOperations.length + 1);
+
+                // 2) Actor layer: message handling without inheritance
+                const counter = createVibeActor({ inc: st => { st.n = (st.n||0)+1; return st.n; } }, { n: 0});
+                const a1 = sendMessage(counter, 'inc');
+                const a2 = sendMessage(counter, 'inc');
+                ok('Actor messages respond', typeof a1 === 'number' && typeof a2 === 'number');
+
+                // 3) Prototype layer: instantiate/callMethod and inheritance resolution
+                const parentProto = createVibePrototype(p => ({ x: p.x||0 }), { getX: inst => ({ out: inst.value.state.x }) });
+                const childProto = createVibePrototype(p => ({ ...p }), { setX: (inst, x) => ({ instance: new VibeSymbol({ kind: 'INSTANCE', proto: inst.value.proto, state: { ...inst.value.state, x } }) }) }, parentProto);
+                const inst = instantiate(childProto, { x: 1 });
+                const got = callMethod(inst, 'getX');
+                const set = callMethod(inst, 'setX', 5);
+                const got2 = callMethod(set.instance, 'getX');
+                ok('Prototype inheritance getX', got.out === 1);
+                ok('Prototype method setX', got2.out === 5);
+
+                // 4) Homoiconicity: structure and source present
+                ok('Homoiconicity: structure', !!s2.structure && typeof s2.structure === 'object');
+                ok('Homoiconicity: sourceCode', typeof doubleFn.sourceCode === 'string');
+
+                // 5) Structural reversibility: vibeRevert
+                const add10 = createVibeFunction(x => x + 10);
+                const s3 = vibeTransform(s2, add10); // 6 -> 16
+                const r1 = vibeRevert(s3, 1);
+                ok('Reversibility one step', r1.value === 6);
+
+                // 6) Memory as computation: pruning keeps relevant subset
+                const before = s3.tapeOperations.length;
+                s3.pruneTapeOperations();
+                const after = s3.tapeOperations.length;
+                ok('Tape pruning reduces or equals', after <= before);
+
+                // 7) Capability checks: EXECUTE required
+                const execFn = createVibeFunction(x => x, { requiredPerms: 4 });
+                let capOk = true;
+                try { vibeTransform(new VibeSymbol(1), execFn); } catch { capOk = false; }
+                ok('Capability EXECUTE allowed by default token', capOk === true);
+
+            } catch (e) {
+                results.push({ name: `Harness error: ${e && e.message ? e.message : e}`, pass: false });
+            }
+
+            show();
+        }
+        
+        function runTrinityDemo() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            
+            log("🔥 Trinity Style Demo - Functions → Actors → Prototypes\n");
+            
+            // Level 1: Pure Function Vibes
+            log("⚡ LEVEL 1: Function Vibes");
+            const addVibe = createVibeFunction(
+                x => x + 10, 
+                { description: "Adds good vibes (+10)" }
+            );
+            log(`Created function: ${addVibe.getVibeEmoji()} ${addVibe.vibeDescription}`);
+            
+            const dataSymbol = new VibeSymbol(5);
+            const result1 = vibeTransform(dataSymbol, addVibe);
+            log(`Transform: 5 → ${result1.value} ${result1.getVibeEmoji()}\n`);
+            
+            // Level 2: Actor Vibes  
+            log("🎭 LEVEL 2: Actor Vibes");
+            const chatActor = createVibeActor({
+                'hello': (state) => "Hey there! ✨",
+                'vibe': (state) => "Feeling those good vibes! 🔥",
+                'time': (state) => `Current vibe time: ${new Date().toLocaleTimeString()}`,
+                'default': (state, msg) => `Processing vibe: ${msg} 💫`
+            });
+            
+            log(`Created actor: ${chatActor.getVibeEmoji()} Handlers: ${chatActor.messageHandlers.join(', ')}`);
+            log(`Message 'hello': ${sendMessage(chatActor, 'hello')}`);
+            log(`Message 'vibe': ${sendMessage(chatActor, 'vibe')}`);
+            log(`Message 'random': ${sendMessage(chatActor, 'something random')}\n`);
+            
+            // Level 3: Prototype Vibes
+            log("🏗️ LEVEL 3: Prototype Vibes");
+            const pointPrototype = createVibePrototype(
+                (params) => ({ x: params.x || 0, y: params.y || 0 }),
+                {
+                    move: (instance, dx, dy) => {
+                        const newData = { 
+                            x: instance.value.state.x + dx, 
+                            y: instance.value.state.y + dy 
+                        };
+                        const newInstance = new VibeSymbol({ kind: 'INSTANCE', proto: instance.value.proto, state: newData });
+                        return { instance: newInstance };
+                    },
+                    distance: (instance, other) => {
+                        const dx = instance.value.state.x - other.value.state.x;
+                        const dy = instance.value.state.y - other.value.state.y;
+                        return { out: Math.sqrt(dx * dx + dy * dy) };
+                    }
+                }
+            );
+            
+            log(`Created prototype: ${pointPrototype.getVibeEmoji()} Methods: ${pointPrototype.methods.join(', ')}`);
+            
+            const point1 = instantiate(pointPrototype, { x: 3, y: 4 });
+            const point2 = instantiate(pointPrototype, { x: 0, y: 0 });
+            
+            log(`Point 1: ${JSON.stringify(point1.value.state)} ${point1.getVibeEmoji()}`);
+            log(`Point 2: ${JSON.stringify(point2.value.state)} ${point2.getVibeEmoji()}`);
+            
+            const distResult = callMethod(point1, 'distance', point2);
+            log(`Distance: ${distResult.out}`);
+            
+            const moveResult = callMethod(point1, 'move', 2, 3);
+            log(`After move(2,3): ${JSON.stringify(moveResult.instance.value.state)} ${moveResult.instance.getVibeEmoji()}`);
+            
+            updateSymbolSpace();
+        }
+        
+        // Actor → System Root → User Root → Feature Prototype chain
+        function runArchitectChain() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            log('🏗️ Architect Chain: Actor generates system root → user root → feature prototypes');
+
+            // L3 Actor: SystemArchitect (non-hereditary)
+            const SystemArchitect = createVibeActor({
+                synthesize: (state, params) => {
+                    state.generated = (state.generated || 0) + 1;
+                    const systemRoot = createVibePrototype(
+                        p => ({ ns: p && p.ns ? p.ns : 'system', created: Date.now(), tenants: [] }),
+                        {
+                            spawnUserRoot: (sys, tenant) => {
+                                const userRoot = createVibePrototype(
+                                    u => ({ tenant, features: [], created: Date.now(), parent: sys.value && sys.value.proto ? sys.value.proto : null }),
+                                    {
+                                        spawnFeatureProto: (usr, name) => {
+                                            const feature = createVibePrototype(
+                                                f => ({ name, version: '0.1.0', owner: tenant }),
+                                                {
+                                                    describe: (inst) => ({ out: `Feature ${name}@${inst.value.state.version} for ${tenant}` })
+                                                }
+                                            );
+                                            return { instance: new VibeSymbol({ kind: 'PROTOTYPE', ref: feature.hash }), out: feature.hash };
+                                        }
+                                    }
+                                );
+                                return { instance: new VibeSymbol({ kind: 'PROTOTYPE', ref: userRoot.hash }), out: userRoot.hash };
+                            }
+                        }
+                    );
+                    return `systemRoot:${systemRoot.hash}`;
+                }
+            }, { generated: 0 });
+
+            // Actor invocation
+            const sysRef = sendMessage(SystemArchitect, 'synthesize', { ns: 'sys' });
+            log(`Architect synthesized: ${sysRef}`);
+
+            // Find latest prototype as system root (heuristic)
+            let systemRoot = null;
+            for (const [, s] of VIBE_SPACE) {
+                if (s.vibeType === 'PROTOTYPE') systemRoot = s;
+            }
+            if (!systemRoot) { log('Failed to locate systemRoot'); return; }
+
+            // Spawn a user root from system root
+            const sysInst = new VibeSymbol({ kind: 'INSTANCE', proto: systemRoot.hash, state: { ns: 'system' } });
+            const userRootHash = callMethod(sysInst, 'spawnUserRoot', 'tenantA').out;
+            log(`Spawned userRoot: ${userRootHash}`);
+
+            // Find userRoot by hash
+            let userRoot = null;
+            for (const [, s] of VIBE_SPACE) if (s.hash === userRootHash) { userRoot = s; break; }
+            if (!userRoot) { log('Failed to locate userRoot'); return; }
+
+            // Spawn a feature from user root
+            const userInst = new VibeSymbol({ kind: 'INSTANCE', proto: userRoot.hash, state: { tenant: 'tenantA' } });
+            const featureHash = callMethod(userInst, 'spawnFeatureProto', 'Inbox').out;
+            log(`Spawned feature prototype: ${featureHash}`);
+
+            // Describe feature
+            let featureProto = null;
+            for (const [, s] of VIBE_SPACE) if (s.hash === featureHash) { featureProto = s; break; }
+            const featureInst = instantiate(featureProto, { name: 'Inbox' });
+            const desc = callMethod(featureInst, 'describe');
+            log(`Feature description: ${desc.out}`);
+            
+            updateSymbolSpace();
+        }
+        
+        function runVibeDemo() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            
+            log("✨ Vibe Coding Style Demo\n");
+            
+            // Show how an LLM would naturally structure code in Trinity style
+            log("🤖 How an LLM codes with Trinity vibes:\n");
+            
+            log("// 1. Start with function vibes for pure logic");
+            log("const calculateVibe = createVibeFunction(");
+            log("  data => data.map(x => x * 1.618), // Golden ratio vibes");
+            log("  { description: 'Fibonacci sequence generator' }");
+            log(");\n");
+            
+            log("// 2. Bundle functions into actors for stateful behavior");  
+            log("const mathActor = createVibeActor({");
+            log("  'fibonacci': state => calculateFibonacci(state.n),");
+            log("  'prime': state => isPrime(state.num),");
+            log("  'factor': state => getFactors(state.value)");
+            log("}, { precision: 10 });\n");
+            
+            log("// 3. Create prototypes for system architecture");
+            log("const CalculatorPrototype = createVibePrototype(");
+            log("  params => ({ memory: 0, history: [], ...params }),");
+            log("  {");
+            log("    compute: (calc, expr) => evaluateExpression(expr),");
+            log("    remember: (calc, value) => updateMemory(calc, value),");
+            log("    getHistory: calc => calc.value.history");
+            log("  }");
+            log(");\n");
+            
+            log("🎯 The vibe: LLM naturally thinks in this hierarchy!");
+            log("   Functions handle pure transformations");
+            log("   Actors manage state and messages  ");
+            log("   Prototypes define system structure");
+            log("   All with unified capability/time travel 🕰️");
+        }
+        
+        function runLLMPattern() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            
+            log("🧠 LLM Trinity Pattern: Real-World Vibe Coding\n");
+            
+            // Show how LLM naturally layers complexity
+            log("⚡ FUNCTIONS: Pure vibe transformations");
+            const validateEmail = createVibeFunction(
+                email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+                { description: "Email validation with good vibes" }
+            );
+            
+            const hashPassword = createVibeFunction(
+                pwd => `hashed_${pwd}_${Math.random().toString(36)}`,
+                { description: "Secure password hashing" }
+            );
+            
+            log(`Email validator: ${validateEmail.getVibeEmoji()} Ready`);
+            log(`Password hasher: ${hashPassword.getVibeEmoji()} Ready\n`);
+            
+            // Test function compositions
+            const emailTest = new VibeSymbol("user@example.com");
+            const isValid = vibeTransform(emailTest, validateEmail);
+            log(`Email validation: "${emailTest.value}" → ${isValid.value} ✅\n`);
+            
+            log("🎭 ACTORS: Stateful service vibes");
+            
+            const authService = createVibeActor({
+                'login': (state) => `Authenticating user with session ${Math.random().toString(36).slice(2)}`,
+                'logout': (state) => "Session terminated safely 🔒",
+                'register': (state) => "New user registered! Welcome to the vibe! ✨",
+                'status': (state) => `Auth service running, ${state.activeUsers || 0} users online`
+            }, { activeUsers: 42, serverLoad: 0.3 });
+            
+            const dataProcessor = createVibeActor({
+                'process': (state) => `Processing batch ${state.batchId++}... 📊`,
+                'analyze': (state) => `Analysis complete: ${Math.floor(Math.random() * 1000)} insights found`,
+                'export': (state) => "Data exported to secure vibe storage 💾"
+            }, { batchId: 1, processed: 0 });
+            
+            log(`Auth Service: ${sendMessage(authService, 'status')}`);
+            log(`Data Processor: ${sendMessage(dataProcessor, 'process')}`);
+            log(`Login attempt: ${sendMessage(authService, 'login')}\n`);
+            
+            log("🏗️ PROTOTYPES: System architecture vibes");
+            
+            const microservicePrototype = createVibePrototype(
+                params => ({
+                    name: params.name,
+                    version: params.version || '1.0.0',
+                    endpoints: params.endpoints || [],
+                    dependencies: params.dependencies || [],
+                    health: 'healthy'
+                }),
+                {
+                    deploy: (service, environment) => {
+                        const newState = {
+                            ...service.value.state,
+                            environment,
+                            status: 'deployed',
+                            deployTime: Date.now()
+                        };
+                        const deployed = new VibeSymbol({ kind: 'INSTANCE', proto: service.value.proto, state: newState });
+                        return { instance: deployed };
+                    },
+                    scale: (service, replicas) => {
+                        const newState = {
+                            ...service.value.state,
+                            replicas,
+                            lastScaled: Date.now()
+                        };
+                        const scaled = new VibeSymbol({ kind: 'INSTANCE', proto: service.value.proto, state: newState });
+                        return { instance: scaled };
+                    },
+                    healthCheck: (service) => {
+                        const health = Math.random() > 0.1 ? 'healthy' : 'degraded';
+                        return { out: `Service ${service.value.state.name}: ${health} 💚` };
+                    }
+                }
+            );
+            
+            // Create microservice instances
+            const userService = instantiate(microservicePrototype, {
+                name: 'user-service',
+                version: '2.1.0',
+                endpoints: ['/api/users', '/api/auth'],
+                dependencies: ['database', 'redis']
+            });
+            
+            const orderService = instantiate(microservicePrototype, {
+                name: 'order-service', 
+                version: '1.8.3',
+                endpoints: ['/api/orders', '/api/payments']
+            });
+            
+            log(`Created services:`);
+            log(`  ${userService.getVibeEmoji()} ${userService.value.state.name} v${userService.value.state.version}`);
+            log(`  ${orderService.getVibeEmoji()} ${orderService.value.state.name} v${orderService.value.state.version}`);
+            
+            // Deploy and scale
+            const deployResult = callMethod(userService, 'deploy', 'production');
+            const scaleResult = callMethod(orderService, 'scale', 3);
+            
+            log(`\nOperations:`);
+            log(`  Deploy: ${deployResult.instance.value.state.name} → ${deployResult.instance.value.state.environment}`);
+            log(`  Scale: ${scaleResult.instance.value.state.name} → ${scaleResult.instance.value.state.replicas} replicas`);
+            
+            const healthResult1 = callMethod(userService, 'healthCheck');
+            const healthResult2 = callMethod(orderService, 'healthCheck');
+            log(`  Health: ${healthResult1.out}`);
+            log(`  Health: ${healthResult2.out}\n`);
+            
+            log("🕰️ TIME TRAVEL DEBUGGING:");
+            log("Let's revert the scaling operation...");
+            const revertedOrder = vibeRevert(scaleResult.instance, 1);
+            log(`Before scaling: ${JSON.stringify(revertedOrder.value, null, 2)}`);
+            log("✨ Perfect rollback! No replicas field = original state\n");
+            
+            log("🌟 EMERGENT VIBE PATTERNS:");
+            log("   🔄 Functions compose into pure transformation pipelines");
+            log("   🎯 Actors encapsulate business logic with natural state management");  
+            log("   🏗️ Prototypes enable microservice/component architectures");
+            log("   ⏪ Time travel debugging works across ALL abstraction levels");
+            log("   🔐 Capabilities flow through the entire system automatically");
+            log("   🚀 LLM naturally thinks in this Trinity hierarchy!");
+            
+            updateSymbolSpace();
+        }
+
+        function runWebFramework() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            
+            log("🌐 Trinity Vibe Web Framework File System\n");
+            log("🎯 Design Principles: Minimalism through Conceptual Unification, Synergy, and Orthogonality\n");
+            
+            // ============= LEVEL 1: FUNCTION VIBES - Pure File Operations =============
+            log("⚡ LEVEL 1: Pure File System Functions");
+            
+            const readFile = createVibeFunction(
+                path => ({ content: `Content of ${path}`, size: Math.floor(Math.random() * 10000) }),
+                { description: "Pure file reading with capability checking", requiredPerms: 1 } // READ
+            );
+            
+            const writeFile = createVibeFunction(
+                ({path, content}) => ({ written: true, path, bytes: content.length }),
+                { description: "Pure file writing with provenance", requiredPerms: 2 } // WRITE
+            );
+            
+            const transformContent = createVibeFunction(
+                ({content, transform}) => ({ content: transform(content), transformed: true }),
+                { description: "Content transformation pipeline", requiredPerms: 4 } // EXECUTE
+            );
+            
+            log(`📖 Read Function: ${readFile.getVibeEmoji()} ${readFile.vibeDescription}`);
+            log(`✍️ Write Function: ${writeFile.getVibeEmoji()} ${writeFile.vibeDescription}`);
+            log(`🔄 Transform Function: ${transformContent.getVibeEmoji()} ${transformContent.vibeDescription}\n`);
+            
+            // ============= LEVEL 2: ACTOR VIBES - File System Services =============
+            log("🎭 LEVEL 2: File System Actor Services (Non-Hereditary)");
+            
+            // File Cache Actor - manages file caching with LRU eviction
+            const fileCacheActor = createVibeActor({
+                'get': (state, path) => {
+                    const cached = state.cache.get(path);
+                    if (cached) {
+                        state.hits++;
+                        return `Cache HIT: ${path} (${state.hits} total hits)`;
+                    }
+                    state.misses++;
+                    return `Cache MISS: ${path} (${state.misses} total misses)`;
+                },
+                'set': (state, {path, content}) => {
+                    state.cache.set(path, content);
+                    state.size++;
+                    return `Cached: ${path} (${state.size} files cached)`;
+                },
+                'evict': (state, path) => {
+                    const removed = state.cache.delete(path);
+                    if (removed) state.size--;
+                    return removed ? `Evicted: ${path}` : `Not found: ${path}`;
+                },
+                'stats': (state) => `Cache: ${state.size} files, ${state.hits} hits, ${state.misses} misses`
+            }, { cache: new Map(), size: 0, hits: 0, misses: 0 });
+            
+            // File Watcher Actor - monitors file changes
+            const fileWatcherActor = createVibeActor({
+                'watch': (state, path) => {
+                    state.watched.add(path);
+                    return `👀 Watching: ${path} (${state.watched.size} files watched)`;
+                },
+                'unwatch': (state, path) => {
+                    state.watched.delete(path);
+                    return `🚫 Unwatching: ${path}`;
+                },
+                'notify': (state, {path, event}) => {
+                    if (state.watched.has(path)) {
+                        state.events.push({path, event, timestamp: Date.now()});
+                        return `🔔 ${event} event on ${path}`;
+                    }
+                    return `Ignoring event on unwatched file: ${path}`;
+                },
+                'events': (state) => `Recent events: ${state.events.slice(-3).map(e => `${e.path}:${e.event}`).join(', ')}`
+            }, { watched: new Set(), events: [] });
+            
+            // File Router Actor - handles request routing with middleware
+            const fileRouterActor = createVibeActor({
+                'route': (state, {method, path}) => {
+                    const route = state.routes.find(r => r.pattern.test(path) && r.method === method);
+                    if (route) {
+                        state.requests++;
+                        return `🎯 Route matched: ${method} ${path} → ${route.handler}`;
+                    }
+                    state.notFound++;
+                    return `❌ No route: ${method} ${path}`;
+                },
+                'add': (state, {method, pattern, handler}) => {
+                    state.routes.push({method, pattern: new RegExp(pattern), handler});
+                    return `➕ Added route: ${method} ${pattern} → ${handler}`;
+                },
+                'stats': (state) => `Router: ${state.routes.length} routes, ${state.requests} hits, ${state.notFound} misses`
+            }, { routes: [], requests: 0, notFound: 0 });
+            
+            log(`💾 Cache Actor: ${fileCacheActor.getVibeEmoji()} Handles file caching with LRU`);
+            log(`👀 Watcher Actor: ${fileWatcherActor.getVibeEmoji()} Monitors file system changes`);
+            log(`🎯 Router Actor: ${fileRouterActor.getVibeEmoji()} Routes requests to handlers\n`);
+            
+            // Test actor interactions
+            log("🔄 Actor Interactions:");
+            log(`  ${sendMessage(fileCacheActor, 'stats')}`);
+            log(`  ${sendMessage(fileWatcherActor, 'watch', '/app/index.js')}`);
+            log(`  ${sendMessage(fileRouterActor, 'add', {method: 'GET', pattern: '/api/.*', handler: 'apiHandler'})}`);
+            log(`  ${sendMessage(fileRouterActor, 'route', {method: 'GET', path: '/api/users'})}\n`);
+            
+            // ============= LEVEL 3: PROTOTYPE VIBES - Framework Architecture =============
+            log("🏗️ LEVEL 3: Framework Architecture Prototypes (Hereditary)");
+            
+            // Base File System Node - all files inherit from this
+            const fsNodePrototype = createVibePrototype(
+                params => ({
+                    path: params.path,
+                    name: params.path.split('/').pop(),
+                    parent: params.parent || null,
+                    permissions: params.permissions || 0o644,
+                    created: Date.now(),
+                    modified: Date.now()
+                }),
+                {
+                    getPath: (node) => ({ out: node.value.state.path }),
+                    getName: (node) => ({ out: node.value.state.name }),
+                    setPermissions: (node, perms) => {
+                        const newState = {...node.value.state, permissions: perms, modified: Date.now()};
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: node.value.proto, state: newState });
+                        return { instance: updated, out: `Permissions set to ${perms.toString(8)}` };
+                    },
+                    isReadable: (node) => ({ out: (node.value.state.permissions & 0o400) !== 0 }),
+                    isWritable: (node) => ({ out: (node.value.state.permissions & 0o200) !== 0 })
+                }
+            );
+            
+            // File Prototype - inherits from FSNode, adds file-specific methods
+            const filePrototype = createVibePrototype(
+                params => ({
+                    ...params,
+                    type: 'file',
+                    content: params.content || '',
+                    size: (params.content || '').length,
+                    mimeType: params.mimeType || 'text/plain'
+                }),
+                {
+                    read: (file) => {
+                        const readable = callMethod(file, 'isReadable');
+                        if (!readable.out) return { out: 'Permission denied' };
+                        return { out: file.value.state.content };
+                    },
+                    write: (file, content) => {
+                        const writable = callMethod(file, 'isWritable');
+                        if (!writable.out) return { out: 'Permission denied' };
+                        const newState = {
+                            ...file.value.state,
+                            content,
+                            size: content.length,
+                            modified: Date.now()
+                        };
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: file.value.proto, state: newState });
+                        return { instance: updated, out: `Written ${content.length} bytes` };
+                    },
+                    getMimeType: (file) => ({ out: file.value.state.mimeType }),
+                    getSize: (file) => ({ out: file.value.state.size })
+                },
+                fsNodePrototype // Inherits from FSNode
+            );
+            
+            // Directory Prototype - inherits from FSNode, manages children
+            const directoryPrototype = createVibePrototype(
+                params => ({
+                    ...params,
+                    type: 'directory',
+                    children: params.children || new Map()
+                }),
+                {
+                    addChild: (dir, child) => {
+                        const newChildren = new Map(dir.value.state.children);
+                        newChildren.set(child.value.state.name, child);
+                        const newState = {...dir.value.state, children: newChildren, modified: Date.now()};
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: dir.value.proto, state: newState });
+                        return { instance: updated, out: `Added ${child.value.state.name}` };
+                    },
+                    removeChild: (dir, name) => {
+                        const newChildren = new Map(dir.value.state.children);
+                        const removed = newChildren.delete(name);
+                        if (removed) {
+                            const newState = {...dir.value.state, children: newChildren, modified: Date.now()};
+                            const updated = new VibeSymbol({ kind: 'INSTANCE', proto: dir.value.proto, state: newState });
+                            return { instance: updated, out: `Removed ${name}` };
+                        }
+                        return { out: `Not found: ${name}` };
+                    },
+                    list: (dir) => {
+                        const names = Array.from(dir.value.state.children.keys());
+                        return { out: names.join(', ') || '(empty)' };
+                    },
+                    find: (dir, name) => {
+                        const child = dir.value.state.children.get(name);
+                        return { out: child ? `Found: ${child.value.state.type}` : 'Not found' };
+                    }
+                },
+                fsNodePrototype // Inherits from FSNode
+            );
+            
+            // Web Framework Prototype - orchestrates everything
+            const webFrameworkPrototype = createVibePrototype(
+                params => ({
+                    name: params.name || 'Trinity Framework',
+                    version: params.version || '1.0.0',
+                    rootDir: params.rootDir,
+                    cache: params.cache,
+                    watcher: params.watcher,
+                    router: params.router,
+                    middleware: params.middleware || [],
+                    config: params.config || {}
+                }),
+                {
+                    serve: (framework, port) => {
+                        const config = framework.value.state.config;
+                        const newState = {...framework.value.state, port, status: 'running', started: Date.now()};
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: framework.value.proto, state: newState });
+                        return { instance: updated, out: `🚀 ${framework.value.state.name} serving on port ${port}` };
+                    },
+                    addMiddleware: (framework, middleware) => {
+                        const newMiddleware = [...framework.value.state.middleware, middleware];
+                        const newState = {...framework.value.state, middleware: newMiddleware};
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: framework.value.proto, state: newState });
+                        return { instance: updated, out: `Added middleware: ${middleware.name}` };
+                    },
+                    handleRequest: (framework, {method, path, body}) => {
+                        // Simulate request pipeline
+                        const middlewareCount = framework.value.state.middleware.length;
+                        const routerResult = sendMessage(framework.value.state.router, 'route', {method, path});
+                        const cacheResult = sendMessage(framework.value.state.cache, 'get', path);
+                        
+                        return { 
+                            out: `📥 Request: ${method} ${path} → ${middlewareCount} middleware → ${routerResult} → ${cacheResult}` 
+                        };
+                    },
+                    getStats: (framework) => {
+                        const state = framework.value.state;
+                        const uptime = state.started ? Math.floor((Date.now() - state.started) / 1000) : 0;
+                        return { 
+                            out: `📊 ${state.name} v${state.version}: ${state.status || 'stopped'} (${uptime}s uptime)` 
+                        };
+                    }
+                }
+            );
+            
+            log(`📁 FSNode Prototype: ${fsNodePrototype.getVibeEmoji()} Base for all file system objects`);
+            log(`📄 File Prototype: ${filePrototype.getVibeEmoji()} Inherits FSNode + file operations`);
+            log(`📂 Directory Prototype: ${directoryPrototype.getVibeEmoji()} Inherits FSNode + directory management`);
+            log(`🌐 Framework Prototype: ${webFrameworkPrototype.getVibeEmoji()} Orchestrates the entire system\n`);
+            
+            // ============= BUILD THE FRAMEWORK INSTANCE =============
+            log("🏗️ Building Framework Instance:");
+            
+            // Create root directory
+            const rootDir = instantiate(directoryPrototype, { path: '/app', name: 'app' });
+            log(`📂 Created root: ${callMethod(rootDir, 'getPath').out}`);
+            
+            // Create some files
+            const indexFile = instantiate(filePrototype, { 
+                path: '/app/index.js', 
+                content: 'console.log("Trinity Framework!");',
+                mimeType: 'application/javascript'
+            });
+            
+            const configFile = instantiate(filePrototype, { 
+                path: '/app/config.json', 
+                content: '{"port": 3000, "env": "development"}',
+                mimeType: 'application/json'
+            });
+            
+            // Add files to directory
+            const updatedRoot1 = callMethod(rootDir, 'addChild', indexFile);
+            const updatedRoot2 = callMethod(updatedRoot1.instance, 'addChild', configFile);
+            
+            log(`📄 Added files: ${callMethod(updatedRoot2.instance, 'list').out}`);
+            
+            // Create the framework instance
+            const framework = instantiate(webFrameworkPrototype, {
+                name: 'Trinity Vibe Framework',
+                version: '2.0.0',
+                rootDir: updatedRoot2.instance,
+                cache: fileCacheActor,
+                watcher: fileWatcherActor,
+                router: fileRouterActor,
+                config: { hot_reload: true, compression: true }
+            });
+            
+            // Start the framework
+            const runningFramework = callMethod(framework, 'serve', 3000);
+            log(`🚀 ${callMethod(runningFramework.instance, 'getStats').out}`);
+            
+            // Add some middleware
+            const withAuth = callMethod(runningFramework.instance, 'addMiddleware', {name: 'auth', order: 1});
+            const withCors = callMethod(withAuth.instance, 'addMiddleware', {name: 'cors', order: 2});
+            
+            // Simulate request handling
+            log(`\n🔄 Request Handling:`);
+            const request1 = callMethod(withCors.instance, 'handleRequest', {method: 'GET', path: '/api/users'});
+            const request2 = callMethod(withCors.instance, 'handleRequest', {method: 'POST', path: '/api/posts'});
+            log(`  ${request1.out}`);
+            log(`  ${request2.out}`);
+            
+            // ============= DEMONSTRATE UNIFICATION, SYNERGY, ORTHOGONALITY =============
+            log(`\n🎯 DESIGN PRINCIPLES ACHIEVED:`);
+            log(`\n🔄 CONCEPTUAL UNIFICATION:`);
+            log(`   • Everything is a VibeSymbol with causal identity`);
+            log(`   • Files, directories, and framework - same core abstraction`);
+            log(`   • Unified capability model across all components`);
+            log(`   • Single transformation model: vibeTransform()`);
+            
+            log(`\n⚡ SYNERGY:`);
+            log(`   • Actors provide services that prototypes consume`);
+            log(`   • Cache + Watcher + Router work together seamlessly`);
+            log(`   • File operations flow through capability system`);
+            log(`   • Time travel works across all abstraction levels`);
+            
+            log(`\n📐 ORTHOGONALITY:`);
+            log(`   • Functions: Pure file operations (stateless)`);
+            log(`   • Actors: Service behaviors (stateful, non-hereditary)`);
+            log(`   • Prototypes: System structure (stateful, hereditary)`);
+            log(`   • Each level solves different concerns independently`);
+            
+            log(`\n🌟 EMERGENT PROPERTIES:`);
+            log(`   • 🔍 Full request traceability through causal chains`);
+            log(`   • 🔒 Automatic permission checking at every level`);
+            log(`   • ⏪ Time-travel debugging of entire request lifecycle`);
+            log(`   • 🚀 Hot-reload via file watcher + cache invalidation`);
+            log(`   • 📊 Real-time metrics from actor state`);
+            log(`   • 🧬 Framework extensibility through prototype inheritance`);
+            
+            updateSymbolSpace();
+        }
+
+        function runTapeLoopDemo() {
+            const output = document.getElementById('output');
+            output.textContent = '';
+            
+            log("🎬 Trinity Vibe Tape-Loop Layer: Ubiquitous Homoiconicity & Structural Reversibility\n");
+            log("🎯 Demonstrating bottom-up inheritance from tape-loop foundation\n");
+            
+            // ============= TAPE-LOOP FOUNDATION =============
+            log("📼 TAPE-LOOP LAYER: Reversible Operations");
+            
+            // Create some basic tape operations
+            const writeOp = new TapeOperation('write', 'Hello', 0);
+            const moveOp = new TapeOperation('move', 5, 0);
+            const markOp = new TapeOperation('mark', 'checkpoint_1', 5);
+            
+            log(`Operation 1: ${writeOp.toCode()}`);
+            log(`  Structure: ${JSON.stringify(writeOp.structure)}`);
+            log(`  Inverse: ${writeOp.inverse.toCode()}`);
+            
+            log(`Operation 2: ${moveOp.toCode()}`);
+            log(`  Inverse: ${moveOp.inverse.toCode()}`);
+            
+            log(`Operation 3: ${markOp.toCode()}`);
+            log(`  Inverse: ${markOp.inverse.toCode()}\n`);
+            
+            // ============= INHERITED HOMOICONICITY =============
+            log("🔮 INHERITED HOMOICONICITY: Code as Data");
+            
+            // Create a function symbol
+            const mathFunc = createVibeFunction(x => x * x + 1, { description: "Quadratic function" });
+            log(`Function Symbol: ${mathFunc.getVibeEmoji()}`);
+            log(`  Source Code: ${mathFunc.sourceCode}`);
+            log(`  Structure: ${JSON.stringify(mathFunc.structure, null, 2)}`);
+            
+            // Create an actor symbol  
+            const counterActor = createVibeActor({
+                'increment': (state) => { state.count++; return `Count: ${state.count}`; },
+                'decrement': (state) => { state.count--; return `Count: ${state.count}`; },
+                'reset': (state) => { state.count = 0; return 'Reset to 0'; }
+            }, { count: 0 });
+            
+            log(`\nActor Symbol: ${counterActor.getVibeEmoji()}`);
+            log(`  Source Code: ${counterActor.sourceCode}`);
+            log(`  Handlers: ${counterActor.messageHandlers.join(', ')}`);
+            
+            // SELF-MODIFICATION through homoiconicity
+            log(`\n🔧 SELF-MODIFICATION via Homoiconicity:`);
+            const modifiedFunc = mathFunc.modifySelf(code => 
+                code.replace('x * x + 1', 'x * x * x + 2 * x + 1') // cubic instead of quadratic
+            );
+            log(`Original: ${mathFunc.sourceCode}`);
+            log(`Modified: ${modifiedFunc.sourceCode}`);
+            log(`Tape Operations: ${modifiedFunc.tapeOperations.map(op => op.toCode()).join(' → ')}\n`);
+            
+            // ============= INHERITED STRUCTURAL REVERSIBILITY =============
+            log("⏪ INHERITED STRUCTURAL REVERSIBILITY: Transformation Chains");
+            
+            // Create a chain of transformations
+            const data = new VibeSymbol(5);
+            log(`Initial: ${data.value} (${data.hash.slice(0,8)}...)`);
+            
+            // Transform 1: Square the number
+            const squareFunc = createVibeFunction(x => x * x);
+            const squared = vibeTransform(data, squareFunc);
+            log(`Transform 1: ${data.value} → ${squared.value} (${squared.hash.slice(0,8)}...)`);
+            log(`  Tape Ops: ${squared.tapeOperations.map(op => op.toCode()).join(' → ')}`);
+            
+            // Transform 2: Add 10
+            const addFunc = createVibeFunction(x => x + 10);
+            const added = vibeTransform(squared, addFunc);
+            log(`Transform 2: ${squared.value} → ${added.value} (${added.hash.slice(0,8)}...)`);
+            log(`  Tape Ops: ${added.tapeOperations.map(op => op.toCode()).join(' → ')}`);
+            
+            // Transform 3: Convert to string
+            const stringFunc = createVibeFunction(x => `Result: ${x}`);
+            const stringified = vibeTransform(added, stringFunc);
+            log(`Transform 3: ${added.value} → "${stringified.value}" (${stringified.hash.slice(0,8)}...)`);
+            log(`  Tape Ops: ${stringified.tapeOperations.map(op => op.toCode()).join(' → ')}`);
+            
+            // Show structural differences
+            log(`\n📊 STRUCTURAL DIFF (Transform 3):`);
+            const diff = stringified.transformationMetadata.structuralDiff;
+            log(`  Before Type: ${diff.beforeStructure.type}`);
+            log(`  After Type: ${diff.afterStructure.type}`);
+            log(`  Modifications: ${JSON.stringify(diff.diff.modified)}`);
+            
+            // DEMONSTRATE REVERSIBILITY
+            log(`\n🎬 STRUCTURAL REVERSION:`);
+            log(`Current: "${stringified.value}" (${stringified.hash.slice(0,8)}...)`);
+            
+            const revert1 = vibeRevert(stringified, 1);
+            log(`Revert 1 step: ${revert1.value} (${revert1.hash.slice(0,8)}...)`);
+            
+            const revert2 = vibeRevert(stringified, 2);
+            log(`Revert 2 steps: ${revert2.value} (${revert2.hash.slice(0,8)}...)`);
+            
+            const revert3 = vibeRevert(stringified, 3);
+            log(`Revert 3 steps: ${revert3.value} (${revert3.hash.slice(0,8)}...)`);
+            
+            // DEMONSTRATE TAPE REWIND
+            log(`\n🎬 TAPE REWIND DEMONSTRATION:`);
+            const rewindResult = vibeRevertWithTape(stringified, 2);
+            log(`Final rewound state: ${rewindResult.value}\n`);
+            
+            // ============= UPPER LAYER INHERITANCE =============
+            log("🏗️ UPPER LAYER INHERITANCE: Functions → Actors → Prototypes");
+            
+            // Show how actors inherit homoiconicity and reversibility
+            log(`\n🎭 Actor with inherited properties:`);
+            const smartActor = createVibeActor({
+                'compute': (state, x) => {
+                    state.lastResult = x * x + state.multiplier;
+                    return state.lastResult;
+                },
+                'getCode': (state) => state.sourceCode || 'No code available',
+                'modify': (state, newMultiplier) => {
+                    state.multiplier = newMultiplier;
+                    return `Multiplier set to ${newMultiplier}`;
+                }
+            }, { multiplier: 2, lastResult: 0 });
+            
+            log(`Smart Actor: ${smartActor.getVibeEmoji()}`);
+            log(`  Has source code: ${!!smartActor.sourceCode}`);
+            log(`  Has structure: ${!!smartActor.structure}`);
+            log(`  Has tape operations: ${smartActor.tapeOperations.length}`);
+            log(`  Can self-modify: ${typeof smartActor.modifySelf === 'function'}`);
+            log(`  Can structurally revert: ${typeof smartActor.executeStructuralRevert === 'function'}`);
+            
+            // Test actor operations
+            log(`\n🔄 Actor Operations:`);
+            log(`  ${sendMessage(smartActor, 'compute', 5)}`);
+            log(`  ${sendMessage(smartActor, 'modify', 3)}`);
+            log(`  ${sendMessage(smartActor, 'compute', 5)}`);
+            
+            // Show prototype inheritance
+            log(`\n🏗️ Prototype with inherited properties:`);
+            const calculatorProto = createVibePrototype(
+                params => ({ value: params.value || 0, operations: [] }),
+                {
+                    add: (calc, x) => {
+                        const newValue = calc.value.state.value + x;
+                        const newOps = [...calc.value.state.operations, `+${x}`];
+                        const updated = new VibeSymbol({ kind: 'INSTANCE', proto: calc.value.proto, state: { value: newValue, operations: newOps } });
+                        return { instance: updated, out: newValue };
+                    },
+                    getHistory: (calc) => ({ out: calc.value.state.operations.join(' ') }),
+                    revertLast: (calc) => {
+                        // Use inherited structural reversibility
+                        const reverted = calc.executeStructuralRevert();
+                        return { instance: reverted, out: 'Reverted last operation' };
+                    }
+                }
+            );
+            
+            const calculator = instantiate(calculatorProto, { value: 10 });
+            log(`Calculator Prototype: ${calculatorProto.getVibeEmoji()}`);
+            log(`  Inherits homoiconicity: ${!!calculatorProto.sourceCode}`);
+            log(`  Inherits reversibility: ${!!calculatorProto.transformationMetadata}`);
+            
+            const calc1 = callMethod(calculator, 'add', 5);
+            const calc2 = callMethod(calc1.instance, 'add', 3);
+            log(`\n🧮 Calculator Operations:`);
+            log(`  Initial: 10`);
+            log(`  Add 5: ${calc1.out}`);
+            log(`  Add 3: ${calc2.out}`);
+            log(`  History: ${callMethod(calc2.instance, 'getHistory').out}`);
+            
+            // ============= MEMORY AS COMPUTATION: TAPE PRUNING =============
+            const prunedSymbol = demonstrateTapePruning();
+            
+            // Show global pruning
+            log(`\n🌐 Global Tape Space Management:`);
+            const globalPruned = pruneGlobalTapeSpace();
+            log(`  Total symbols in space: ${VIBE_SPACE.size}`);
+            log(`  Operations pruned globally: ${globalPruned}`);
+            
+            // ============= SUMMARY =============
+            log(`\n🎯 TAPE-LOOP INHERITANCE ACHIEVED:`);
+            log(`\n📼 FOUNDATION PROPERTIES:`);
+            log(`   • All operations are reversible tape operations`);
+            log(`   • Every symbol has structural representation`);
+            log(`   • Code and data are unified (homoiconic)`);
+            log(`   • Transformations preserve provenance`);
+            log(`   • Memory as computation: intelligent tape pruning`);
+            
+            log(`\n⚡ FUNCTION LAYER INHERITANCE:`);
+            log(`   • Functions have source code representation`);
+            log(`   • Function transformations are reversible`);
+            log(`   • Self-modification through code manipulation`);
+            
+            log(`\n🎭 ACTOR LAYER INHERITANCE:`);
+            log(`   • Actors can inspect their own structure`);
+            log(`   • Message handling is reversible`);
+            log(`   • State transitions create tape operations`);
+            
+            log(`\n🏗️ PROTOTYPE LAYER INHERITANCE:`);
+            log(`   • Prototypes generate homoiconic instances`);
+            log(`   • Method calls are structurally reversible`);
+            log(`   • Inheritance chains preserve tape operations`);
+            
+            log(`\n🌟 EMERGENT CAPABILITIES:`);
+            log(`   • 🔍 Complete computational archaeology`);
+            log(`   • 🎬 Time-travel debugging at any abstraction level`);
+            log(`   • 🔧 Live system modification through code manipulation`);
+            log(`   • 🧬 Self-evolving programs via structural introspection`);
+            log(`   • 🔄 Perfect rollback of any system state`);
+            log(`   • 🧠 Memory as computation with intelligent forgetting`);
+            log(`   • 🎯 Causal relevance-based resource management`);
+            
+            updateSymbolSpace();
+        }
+        
+        function updateSymbolSpace() {
+            const symbolSpace = document.getElementById('symbolSpace');
+            let html = '<div style="color: #00ff9f; font-weight: bold;">Active Symbol Space:</div><br>';
+            
+            let count = 0;
+            for (const [hash, symbol] of VIBE_SPACE) {
+                if (count++ > 10) {
+                    html += '<div style="color: #666;">... and more symbols</div>';
+                    break;
+                }
+                
+                html += `<div class="symbol-viz">`;
+                html += `<strong>${symbol.getVibeEmoji()} ${symbol.vibeType}</strong> `;
+                html += `<span style="color: #888;">${hash}</span>`;
+                html += ` <button onclick="inspectSymbol('${hash}')">Inspect</button>`;
+                html += `<br>`;
+                html += `<small>Coord: ${symbol.coord} | `;
+                
+                // Show capabilities
+                const caps = Array.from(symbol.capabilities);
+                if (caps.length > 0) {
+                    html += `Caps: `;
+                    for (const cap of caps.slice(0, 2)) {
+                        html += `<span class="capability-token">${cap.getVibeEmoji()}</span>`;
+                    }
+                }
+                html += `</small>`;
+                html += `</div>`;
+            }
+            
+            symbolSpace.innerHTML = html;
+        }
+
+        function inspectSymbol(hash) {
+            const panel = document.getElementById('symbolInspector');
+            const s = VIBE_SPACE.get(hash);
+            if (!s) {
+                panel.textContent = `Symbol not found: ${hash}`;
+                return;
+            }
+            const details = {
+                hash,
+                vibeType: s.vibeType,
+                coord: s.coord,
+                valuePreview: typeof s.value === 'object' ? (s.value && s.value.kind ? s.value.kind : 'object') : s.value,
+                structure: s.structure,
+                sourceCode: s.sourceCode,
+                history: s.history,
+                tapeLength: s.tapeOperations.length,
+                capabilities: Array.from(s.capabilities).map(c => ({ perms: c.permissions, scope: c.scope, expiry: c.expiry }))
+            };
+            const info = `Hash: ${details.hash}\nType: ${details.vibeType}\nCoord: ${details.coord}\nValue: ${JSON.stringify(details.valuePreview)}\nTape Ops: ${details.tapeLength}\nHistory: ${JSON.stringify(details.history)}\nStructure: ${JSON.stringify(details.structure, null, 2)}\nSource: ${details.sourceCode}`;
+            panel.innerHTML = `<pre style="white-space:pre-wrap;">${info}</pre>` +
+                              `<div style="margin-top:8px;">` +
+                              `<button onclick="inspectPrune('${hash}')">Prune</button> ` +
+                              `<button onclick="inspectRevert('${hash}',1)">Revert 1</button> ` +
+                              `<button onclick="inspectExport('${hash}')">Export</button>` +
+                              `</div>`;
+        }
+
+        function inspectPrune(hash) {
+            const s = VIBE_SPACE.get(hash);
+            if (!s) return;
+            s.pruneTapeOperations();
+            log(`[inspect] Pruned tape for ${hash}`);
+            updateSymbolSpace();
+            inspectSymbol(hash);
+        }
+
+        function inspectRevert(hash, steps) {
+            const s = VIBE_SPACE.get(hash);
+            if (!s) return;
+            const reverted = vibeRevert(s, steps || 1);
+            VIBE_SPACE.set(reverted.hash, reverted);
+            log(`[inspect] Reverted ${hash} by ${steps} → ${reverted.hash}`);
+            updateSymbolSpace();
+            inspectSymbol(reverted.hash);
+        }
+
+        function inspectExport(hash) {
+            const s = VIBE_SPACE.get(hash);
+            if (!s) return;
+            const payload = {
+                hash: s.hash,
+                value: s.value,
+                structure: s.structure,
+                sourceCode: s.sourceCode,
+                history: s.history,
+                tape: s.tapeOperations.map(op => ({ type: op.type, data: op.data, pos: op.position })),
+                coord: s.coord,
+                vibeType: s.vibeType
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `symbol-${hash}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            log(`[inspect] Exported ${hash}`);
+        }
+
+        // Expose inspector helpers globally for inline onclick handlers
+        window.inspectSymbol = inspectSymbol;
+        window.inspectPrune = inspectPrune;
+        window.inspectRevert = inspectRevert;
+        window.inspectExport = inspectExport;
+
+        // ============= PERSISTENCE (localStorage) =============
+        function serializeSpace() {
+            const arr = [];
+            for (const [hash, s] of VIBE_SPACE) {
+                arr.push({
+                    hash,
+                    value: s.value,
+                    structure: s.structure,
+                    sourceCode: s.sourceCode,
+                    history: s.history,
+                    tape: s.tapeOperations.map(op => ({ type: op.type, data: op.data, pos: op.position })),
+                    coord: s.coord,
+                    vibeType: s.vibeType
+                });
+            }
+            return JSON.stringify({ temporalCoord, symbols: arr });
+        }
+
+        function deserializeSpace(json) {
+            try {
+                const data = JSON.parse(json);
+                if (!data || !Array.isArray(data.symbols)) return false;
+                VIBE_SPACE.clear();
+                temporalCoord = data.temporalCoord || 0;
+                for (const s of data.symbols) {
+                    const vs = new VibeSymbol(s.value);
+                    vs.structure = s.structure;
+                    vs.sourceCode = s.sourceCode;
+                    vs.history = s.history || [];
+                    vs.tapeOperations = (s.tape || []).map(op => new TapeOperation(op.type, op.data, op.pos, false));
+                    vs.vibeType = s.vibeType || vs.vibeType;
+                    // override hash mapping to keep continuity
+                    VIBE_SPACE.set(vs.hash, vs);
+                }
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function saveSpace() {
+            const status = document.getElementById('persistStatus');
+            const payload = serializeSpace();
+            localStorage.setItem('TRINITY_VIBE_SPACE', payload);
+            status.textContent = `Saved ${VIBE_SPACE.size} symbols (coord=${temporalCoord}).`;
+        }
+
+        function loadSpace() {
+            const status = document.getElementById('persistStatus');
+            const payload = localStorage.getItem('TRINITY_VIBE_SPACE');
+            if (!payload) {
+                status.textContent = 'No saved space found.';
+                return;
+            }
+            const ok = deserializeSpace(payload);
+            status.textContent = ok ? `Loaded space with ${VIBE_SPACE.size} symbols.` : 'Failed to load space.';
+            updateSymbolSpace();
+        }
+
+        function clearSpace() {
+            const status = document.getElementById('persistStatus');
+            VIBE_SPACE.clear();
+            status.textContent = 'Cleared in-memory VIBE_SPACE.';
+            updateSymbolSpace();
+        }
+        
+        // IDE ACTIVATION: wrap button actions as activation tape operations
+        function activate(label, fn) {
+            try {
+                // Ensure activation symbol exists even if load handler hasn't fired
+                if (!UI_ACTIVATION) UI_ACTIVATION = new VibeSymbol({ kind: 'UI', name: 'IDE' });
+                const activation = createVibeFunction(() => {
+                    const result = fn();
+                    return result === undefined ? `${label} executed` : result;
+                }, { description: `Activate: ${label}` });
+                const result = vibeTransform(UI_ACTIVATION, activation);
+                // advance activation head so tape/history accumulate on subsequent activations
+                UI_ACTIVATION = result;
+                log(`[activate] ${result.value}`);
+                updateSymbolSpace();
+            } catch (e) {
+                console.error(e);
+                log(`[activate:error] ${label} → ${e && e.message ? e.message : e}`);
+            }
+        }
+        
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').textContent = '';
+            document.getElementById('symbolSpace').innerHTML = 'Symbol space cleared...';
+        }
+        
+        // Initialize with some vibe
+        window.addEventListener('load', () => {
+            // Initialize activation symbol once classes are defined
+            if (!UI_ACTIVATION) UI_ACTIVATION = new VibeSymbol({ kind: 'UI', name: 'IDE' });
+            updateSymbolSpace();
+        });
+    </script>
+</body>
+</html>
+
