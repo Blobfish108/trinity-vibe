@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinity Vibe Web Integration Example</title>
+    <style>
+        body {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #0a0a0a;
+            color: #00ff9f;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .example {
+            background: rgba(0, 255, 159, 0.05);
+            border: 1px solid rgba(0, 255, 159, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .output {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #00ff9f;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        button {
+            background: linear-gradient(45deg, #00ff9f, #0080ff);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Trinity Vibe Web Integration Examples</h1>
+    <p>This demonstrates how to use Trinity Vibe as a library in web applications.</p>
+
+    <!-- Load Trinity Vibe Core -->
+    <script src="../trinity-vibe-core.js"></script>
+
+    <div class="example">
+        <h3>Example 1: Data Processing Pipeline</h3>
+        <button onclick="runDataPipeline()">Run Data Pipeline</button>
+        <div id="pipeline-output" class="output"></div>
+    </div>
+
+    <div class="example">
+        <h3>Example 2: Actor-Based State Management</h3>
+        <button onclick="runActorExample()">Run Actor Example</button>
+        <div id="actor-output" class="output"></div>
+    </div>
+
+    <div class="example">
+        <h3>Example 3: Time Travel Debugging</h3>
+        <button onclick="runTimeTravelExample()">Run Time Travel</button>
+        <div id="timetravel-output" class="output"></div>
+    </div>
+
+    <div class="example">
+        <h3>Example 4: Prototype System</h3>
+        <button onclick="runPrototypeExample()">Run Prototype Example</button>
+        <div id="prototype-output" class="output"></div>
+    </div>
+
+    <script>
+        // Initialize Trinity Vibe
+        const TV = window.TrinityVibe;
+        
+        function log(elementId, message) {
+            document.getElementById(elementId).innerHTML += message + '<br>';
+        }
+
+        function runDataPipeline() {
+            const output = document.getElementById('pipeline-output');
+            output.innerHTML = '';
+            
+            // Create initial data
+            const rawData = TV.createVibeSymbol({
+                users: [
+                    { name: 'Alice', age: 25, email: 'alice@example.com' },
+                    { name: 'Bob', age: -5, email: 'invalid-email' },
+                    { name: 'Carol', age: 30, email: 'carol@example.com' }
+                ]
+            });
+            
+            log('pipeline-output', '📊 Initial Data: ' + JSON.stringify(rawData.value, null, 2));
+            
+            // Transform: Validate users
+            const validated = TV.vibeTransform(rawData, {
+                operation: (data) => ({
+                    users: data.users.filter(user => 
+                        user.age > 0 && 
+                        user.email.includes('@')
+                    ),
+                    validationTime: new Date().toISOString()
+                })
+            });
+            
+            log('pipeline-output', '✅ Validated Data: ' + JSON.stringify(validated.value, null, 2));
+            
+            // Transform: Add computed fields
+            const enriched = TV.vibeTransform(validated, {
+                operation: (data) => ({
+                    ...data,
+                    users: data.users.map(user => ({
+                        ...user,
+                        ageGroup: user.age < 30 ? 'young' : 'mature',
+                        id: TV.vibeHash(user.name, user.email)
+                    }))
+                })
+            });
+            
+            log('pipeline-output', '🔄 Enriched Data: ' + JSON.stringify(enriched.value, null, 2));
+            log('pipeline-output', '🏷️  Transformation History: ' + enriched.history.length + ' steps');
+        }
+
+        function runActorExample() {
+            const output = document.getElementById('actor-output');
+            output.innerHTML = '';
+            
+            // Create a counter actor
+            const counter = TV.createVibeActor('Counter', {
+                state: { count: 0 },
+                handlers: {
+                    increment: function() {
+                        this.state.count++;
+                        return this.state.count;
+                    },
+                    decrement: function() {
+                        this.state.count--;
+                        return this.state.count;
+                    },
+                    getCount: function() {
+                        return this.state.count;
+                    }
+                }
+            });
+            
+            log('actor-output', '🎭 Created Counter Actor: ' + counter.value.name);
+            log('actor-output', '📊 Initial Count: ' + TV.sendMessage(counter, 'getCount'));
+            
+            // Send messages to the actor
+            const result1 = TV.sendMessage(counter, 'increment');
+            log('actor-output', '⬆️  After increment: ' + result1);
+            
+            const result2 = TV.sendMessage(counter, 'increment');
+            log('actor-output', '⬆️  After increment: ' + result2);
+            
+            const result3 = TV.sendMessage(counter, 'decrement');
+            log('actor-output', '⬇️  After decrement: ' + result3);
+            
+            log('actor-output', '🏷️  Actor Type: ' + counter.vibeType);
+            log('actor-output', '🆔 Actor Hash: ' + counter.hash);
+        }
+
+        function runTimeTravelExample() {
+            const output = document.getElementById('timetravel-output');
+            output.innerHTML = '';
+            
+            // Create initial state
+            let gameState = TV.createVibeSymbol({
+                level: 1,
+                score: 0,
+                lives: 3,
+                inventory: []
+            });
+            
+            log('timetravel-output', '🎮 Initial Game State: ' + JSON.stringify(gameState.value));
+            
+            // Make some changes
+            gameState = TV.vibeTransform(gameState, {
+                operation: (state) => ({
+                    ...state,
+                    score: state.score + 100,
+                    inventory: [...state.inventory, 'sword']
+                })
+            });
+            log('timetravel-output', '⚔️  Found sword, gained points: ' + JSON.stringify(gameState.value));
+            
+            gameState = TV.vibeTransform(gameState, {
+                operation: (state) => ({
+                    ...state,
+                    level: state.level + 1,
+                    score: state.score + 500
+                })
+            });
+            log('timetravel-output', '🆙 Level up!: ' + JSON.stringify(gameState.value));
+            
+            gameState = TV.vibeTransform(gameState, {
+                operation: (state) => ({
+                    ...state,
+                    lives: state.lives - 1,
+                    score: Math.max(0, state.score - 200)
+                })
+            });
+            log('timetravel-output', '💔 Took damage: ' + JSON.stringify(gameState.value));
+            
+            // Time travel back 2 steps
+            log('timetravel-output', '⏰ Traveling back 2 steps...');
+            const revertedState = TV.vibeRevert(gameState, 2);
+            log('timetravel-output', '🔄 Reverted State: ' + JSON.stringify(revertedState.value));
+            
+            log('timetravel-output', '📊 History Length: ' + gameState.history.length);
+            log('timetravel-output', '🧵 Tape Operations: ' + gameState.tapeOperations.length);
+        }
+
+        function runPrototypeExample() {
+            const output = document.getElementById('prototype-output');
+            output.innerHTML = '';
+            
+            // Create a Vehicle prototype
+            const Vehicle = TV.createVibePrototype('Vehicle', {
+                properties: {
+                    wheels: 4,
+                    engine: 'gasoline'
+                },
+                methods: {
+                    start: function() {
+                        return `${this.brand} ${this.model} engine started!`;
+                    },
+                    getInfo: function() {
+                        return `${this.brand} ${this.model} - ${this.wheels} wheels, ${this.engine} engine`;
+                    }
+                }
+            });
+            
+            log('prototype-output', '🏭 Created Vehicle Prototype');
+            
+            // Create instances
+            const car = TV.instantiate(Vehicle, {
+                brand: 'Toyota',
+                model: 'Camry',
+                wheels: 4,
+                engine: 'hybrid'
+            });
+            
+            const motorcycle = TV.instantiate(Vehicle, {
+                brand: 'Harley',
+                model: 'Sportster',
+                wheels: 2,
+                engine: 'V-twin'
+            });
+            
+            log('prototype-output', '🚗 Car Info: ' + TV.callMethod(car, 'getInfo'));
+            log('prototype-output', '🏍️  Motorcycle Info: ' + TV.callMethod(motorcycle, 'getInfo'));
+            
+            log('prototype-output', '🔧 Starting car: ' + TV.callMethod(car, 'start'));
+            log('prototype-output', '🔧 Starting motorcycle: ' + TV.callMethod(motorcycle, 'start'));
+            
+            log('prototype-output', '🏷️  Car Type: ' + car.vibeType);
+            log('prototype-output', '🏷️  Motorcycle Type: ' + motorcycle.vibeType);
+            log('prototype-output', '🔗 Car Prototype: ' + car.value.__prototype__);
+        }
+    </script>
+</body>
+</html>
