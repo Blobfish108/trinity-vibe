@@ -1,5 +1,7 @@
 ## Trinity Vibe Language
 
+A non-Von Neumann causal programming language with ubiquitous homoiconicity and structural reversibility. Trinity Vibe uses memory-as-computation where the system-facing memory performs computations rather than just storing data.
+
 Minimal, homoiconic, and reversible language designed around LLM-native thinking: Functions → Actors → Prototypes. Runs entirely in the browser via `index.html` (no build step).
 
 ### Quick Start
@@ -18,7 +20,7 @@ Minimal, homoiconic, and reversible language designed around LLM-native thinking
 
 - Homoiconicity (code is data): every symbol exposes `structure` and `sourceCode`.
 - Structural reversibility: every transformation is reversible (time travel across states).
-- Memory as computation: tape operations are pruned by causal relevance.
+- Memory as computation: system-facing memory performs computation through tape operations pruned by causal relevance (non-Von Neumann architecture).
 - Minimal orthogonal layers:
   - ⚡ Functions: pure transformations (non-stateful)
   - 🎭 Actors: non-hereditary, message-driven state
@@ -71,3 +73,15 @@ Minimal, homoiconic, and reversible language designed around LLM-native thinking
 - For debugging, open your browser console to see tape rewinds and activation logs.
 - Cache-busting query param `?cb=timestamp` helps force reloads during development.
 
+### Publishing (GitHub Pages)
+
+1. Create a repo (e.g., `trinity-vibe`) and push this folder.
+2. In repo Settings → Pages, set Source to `main` branch, root folder.
+3. Optional: add `.nojekyll` to avoid static site processing.
+4. Share the Pages URL; `index.html` will load the live environment.
+
+### License
+
+Choose a license (e.g., MIT) and add a `LICENSE` file if publishing.
+
+# Trinity Vibe Language (Standalone)\n\n- Independent of Moop and DePlatform\n- Open: /trinity-vibe/index.html\n- Static, no build steps required\n

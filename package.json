@@ -1,0 +1,43 @@
+{
+  "name": "trinity-vibe",
+  "version": "0.1.0",
+  "description": "A non-Von Neumann causal programming language with memory-as-computation, ubiquitous homoiconicity and structural reversibility",
+  "main": "trinity-vibe-core.js",
+  "browser": "trinity-vibe-core.js",
+  "files": [
+    "trinity-vibe-core.js",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node examples/test-core.js",
+    "example:web": "node examples/web-integration.js",
+    "example:node": "node examples/node-integration.js"
+  },
+  "keywords": [
+    "programming-language",
+    "non-von-neumann",
+    "causal-programming",
+    "memory-as-computation",
+    "reversible-computing",
+    "homoiconicity",
+    "actors",
+    "prototypes",
+    "capability-security",
+    "time-travel",
+    "functional-programming"
+  ],
+  "author": "Blobfish108",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Blobfish108/trinity-vibe.git"
+  },
+  "homepage": "https://blobfish108.github.io/trinity-vibe",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
